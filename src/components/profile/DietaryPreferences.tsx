@@ -1,12 +1,20 @@
-import { Checkbox } from "@/components/ui/checkbox";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+
+interface FormData {
+  dietaryPreferences: string[];
+  allergies: string[];
+}
 
 interface DietaryPreferencesProps {
-  formData: {
-    dietaryPreferences: string[];
-    allergies: string[];
-  };
-  updateFormData: (data: Partial<typeof formData>) => void;
+  formData: FormData;
+  updateFormData: (data: Partial<FormData>) => void;
 }
 
 const DietaryPreferences = ({ formData, updateFormData }: DietaryPreferencesProps) => {
@@ -18,9 +26,12 @@ const DietaryPreferences = ({ formData, updateFormData }: DietaryPreferencesProp
     "Dairy-Free",
     "Keto",
     "Paleo",
+    "No Red Meat",
+    "Omnivore",
   ];
 
   const allergies = [
+    "None",
     "Nuts",
     "Dairy",
     "Eggs",
@@ -30,17 +41,21 @@ const DietaryPreferences = ({ formData, updateFormData }: DietaryPreferencesProp
     "Shellfish",
   ];
 
-  const handlePreferenceChange = (preference: string) => {
-    const newPreferences = formData.dietaryPreferences.includes(preference)
-      ? formData.dietaryPreferences.filter((p) => p !== preference)
-      : [...formData.dietaryPreferences, preference];
+  const handlePreferenceChange = (value: string) => {
+    const newPreferences = formData.dietaryPreferences.includes(value)
+      ? formData.dietaryPreferences.filter((p) => p !== value)
+      : [...formData.dietaryPreferences, value];
     updateFormData({ dietaryPreferences: newPreferences });
   };
 
-  const handleAllergyChange = (allergy: string) => {
-    const newAllergies = formData.allergies.includes(allergy)
-      ? formData.allergies.filter((a) => a !== allergy)
-      : [...formData.allergies, allergy];
+  const handleAllergyChange = (value: string) => {
+    if (value === "None") {
+      updateFormData({ allergies: [] });
+      return;
+    }
+    const newAllergies = formData.allergies.includes(value)
+      ? formData.allergies.filter((a) => a !== value)
+      : [...formData.allergies, value];
     updateFormData({ allergies: newAllergies });
   };
 
@@ -48,15 +63,20 @@ const DietaryPreferences = ({ formData, updateFormData }: DietaryPreferencesProp
     <div className="space-y-8">
       <div className="space-y-4">
         <h3 className="text-lg font-medium">Dietary Preferences</h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4">
           {preferences.map((preference) => (
             <div key={preference} className="flex items-center space-x-2">
-              <Checkbox
-                id={preference}
-                checked={formData.dietaryPreferences.includes(preference)}
-                onCheckedChange={() => handlePreferenceChange(preference)}
-              />
-              <Label htmlFor={preference}>{preference}</Label>
+              <Select
+                value={formData.dietaryPreferences.includes(preference) ? preference : ""}
+                onValueChange={() => handlePreferenceChange(preference)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={preference} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={preference}>{preference}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           ))}
         </div>
@@ -64,15 +84,20 @@ const DietaryPreferences = ({ formData, updateFormData }: DietaryPreferencesProp
 
       <div className="space-y-4">
         <h3 className="text-lg font-medium">Allergies & Intolerances</h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4">
           {allergies.map((allergy) => (
             <div key={allergy} className="flex items-center space-x-2">
-              <Checkbox
-                id={allergy}
-                checked={formData.allergies.includes(allergy)}
-                onCheckedChange={() => handleAllergyChange(allergy)}
-              />
-              <Label htmlFor={allergy}>{allergy}</Label>
+              <Select
+                value={formData.allergies.includes(allergy) ? allergy : ""}
+                onValueChange={() => handleAllergyChange(allergy)}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder={allergy} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value={allergy}>{allergy}</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           ))}
         </div>

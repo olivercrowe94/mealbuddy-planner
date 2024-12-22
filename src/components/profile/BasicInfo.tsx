@@ -1,12 +1,14 @@
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
+interface FormData {
+  name: string;
+  age: string;
+}
+
 interface BasicInfoProps {
-  formData: {
-    name: string;
-    age: string;
-  };
-  updateFormData: (data: Partial<typeof formData>) => void;
+  formData: FormData;
+  updateFormData: (data: Partial<FormData>) => void;
 }
 
 const BasicInfo = ({ formData, updateFormData }: BasicInfoProps) => {

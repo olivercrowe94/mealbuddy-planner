@@ -6,24 +6,104 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { Checkbox } from "@/components/ui/checkbox";
+import { 
+  Target, 
+  Scale, 
+  Heart, 
+  Dumbbell, 
+  Zap, 
+  Clock, 
+  Coffee 
+} from "lucide-react";
+
+interface FormData {
+  healthGoals: string[];
+  cookingLevel: string;
+  aspirationalLevel: string;
+}
 
 interface HealthGoalsProps {
-  formData: {
-    healthGoals: string[];
-    cookingLevel: string;
-  };
-  updateFormData: (data: Partial<typeof formData>) => void;
+  formData: FormData;
+  updateFormData: (data: Partial<FormData>) => void;
 }
 
 const HealthGoals = ({ formData, updateFormData }: HealthGoalsProps) => {
   const goals = [
-    "Weight Loss",
-    "Muscle Gain",
-    "Maintain Weight",
-    "Improve Energy",
-    "Better Nutrition",
-    "Save Time",
+    {
+      id: "weight-loss",
+      label: "Weight Loss",
+      description: "I want to lose weight with balanced, satisfying meals",
+      icon: Scale,
+    },
+    {
+      id: "muscle-gain",
+      label: "Muscle Gain",
+      description: "Build strength with protein-rich, nutritious meals",
+      icon: Dumbbell,
+    },
+    {
+      id: "maintain-weight",
+      label: "Maintain Weight",
+      description: "Keep a healthy balance with consistent nutrition",
+      icon: Target,
+    },
+    {
+      id: "best-nutrition",
+      label: "Best Nutrition",
+      description: "Focus on nutrient-dense, wholesome ingredients",
+      icon: Heart,
+    },
+    {
+      id: "improve-energy",
+      label: "Improve Energy",
+      description: "Feel more energetic throughout the day",
+      icon: Zap,
+    },
+    {
+      id: "save-time",
+      label: "Save Time",
+      description: "Quick, efficient meal prep and cooking",
+      icon: Clock,
+    },
+    {
+      id: "stress-free",
+      label: "Stress-Free Cooking",
+      description: "Simple, enjoyable cooking without complexity",
+      icon: Coffee,
+    },
+  ];
+
+  const cookingLevels = [
+    {
+      value: "newcomer",
+      label: "Complete Newcomer",
+      description: "I've barely boiled water; I need the easiest recipes",
+    },
+    {
+      value: "basic",
+      label: "Basic Cook",
+      description: "I can follow simple recipes and do basic prep",
+    },
+    {
+      value: "comfortable",
+      label: "Comfortable Cook",
+      description: "I can handle most standard recipes without stress",
+    },
+    {
+      value: "enthusiast",
+      label: "Enthusiastic Hobbyist",
+      description: "I enjoy cooking new dishes and experimenting",
+    },
+    {
+      value: "seasoned",
+      label: "Seasoned Home Chef",
+      description: "I'm experienced with advanced techniques",
+    },
+    {
+      value: "aspiring-pro",
+      label: "Aspiring Pro",
+      description: "I love challenging recipes and want to refine my skills",
+    },
   ];
 
   const handleGoalChange = (goal: string) => {
@@ -37,15 +117,33 @@ const HealthGoals = ({ formData, updateFormData }: HealthGoalsProps) => {
     <div className="space-y-8">
       <div className="space-y-4">
         <h3 className="text-lg font-medium">Health Goals</h3>
-        <div className="grid grid-cols-2 gap-4">
+        <div className="grid gap-4">
           {goals.map((goal) => (
-            <div key={goal} className="flex items-center space-x-2">
-              <Checkbox
-                id={goal}
-                checked={formData.healthGoals.includes(goal)}
-                onCheckedChange={() => handleGoalChange(goal)}
-              />
-              <Label htmlFor={goal}>{goal}</Label>
+            <div key={goal.id} className="flex items-center space-x-4 p-4 rounded-lg border hover:bg-gray-50 transition-colors">
+              <goal.icon className="h-6 w-6 text-purple-500" />
+              <div className="flex-1">
+                <Select
+                  value={formData.healthGoals.includes(goal.id) ? goal.id : ""}
+                  onValueChange={() => handleGoalChange(goal.id)}
+                >
+                  <SelectTrigger className="w-full">
+                    <SelectValue>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{goal.label}</span>
+                        <span className="text-sm text-gray-500">{goal.description}</span>
+                      </div>
+                    </SelectValue>
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value={goal.id}>
+                      <div className="flex flex-col">
+                        <span className="font-medium">{goal.label}</span>
+                        <span className="text-sm text-gray-500">{goal.description}</span>
+                      </div>
+                    </SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
             </div>
           ))}
         </div>
@@ -57,13 +155,41 @@ const HealthGoals = ({ formData, updateFormData }: HealthGoalsProps) => {
           value={formData.cookingLevel}
           onValueChange={(value) => updateFormData({ cookingLevel: value })}
         >
-          <SelectTrigger>
+          <SelectTrigger className="w-full">
             <SelectValue placeholder="Select your cooking level" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="beginner">Beginner</SelectItem>
-            <SelectItem value="intermediate">Intermediate</SelectItem>
-            <SelectItem value="advanced">Advanced</SelectItem>
+            {cookingLevels.map((level) => (
+              <SelectItem key={level.value} value={level.value}>
+                <div className="flex flex-col">
+                  <span className="font-medium">{level.label}</span>
+                  <span className="text-sm text-gray-500">{level.description}</span>
+                </div>
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
+      </div>
+
+      <div className="space-y-4">
+        <h3 className="text-lg font-medium">Aspirational Cooking Level</h3>
+        <p className="text-sm text-gray-500 mb-4">Where do you see yourself in a few months or a year?</p>
+        <Select
+          value={formData.aspirationalLevel}
+          onValueChange={(value) => updateFormData({ aspirationalLevel: value })}
+        >
+          <SelectTrigger className="w-full">
+            <SelectValue placeholder="Select your goal cooking level" />
+          </SelectTrigger>
+          <SelectContent>
+            {cookingLevels.map((level) => (
+              <SelectItem key={level.value} value={level.value}>
+                <div className="flex flex-col">
+                  <span className="font-medium">{level.label}</span>
+                  <span className="text-sm text-gray-500">{level.description}</span>
+                </div>
+              </SelectItem>
+            ))}
           </SelectContent>
         </Select>
       </div>
