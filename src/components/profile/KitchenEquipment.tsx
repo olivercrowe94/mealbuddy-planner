@@ -1,7 +1,7 @@
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { Microwave, Oven, Fan, Blender, Thermometer } from "lucide-react";
+import { Microwave, Flame, Fan, Blend, Thermometer } from "lucide-react";
 
 interface FormData {
   equipment: string[];
@@ -14,10 +14,10 @@ interface KitchenEquipmentProps {
 
 const KitchenEquipment = ({ formData, updateFormData }: KitchenEquipmentProps) => {
   const equipment = [
-    { id: "oven", label: "Oven", icon: Oven },
+    { id: "oven", label: "Oven", icon: Flame },
     { id: "microwave", label: "Microwave", icon: Microwave },
     { id: "air-fryer", label: "Air Fryer", icon: Fan },
-    { id: "blender", label: "Blender", icon: Blender },
+    { id: "blender", label: "Blender", icon: Blend },
     { id: "sous-vide", label: "Sous Vide", icon: Thermometer },
   ];
 
