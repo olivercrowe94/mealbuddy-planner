@@ -17,7 +17,7 @@ const Profile = () => {
     allergies: [] as string[],
     healthGoals: [] as string[],
     cookingLevel: "",
-    aspirationalLevel: "", // Added this missing property
+    aspirationalLevel: "",
   });
 
   const updateFormData = (data: Partial<typeof formData>) => {

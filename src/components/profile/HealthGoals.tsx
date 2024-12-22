@@ -5,7 +5,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Label } from "@/components/ui/label";
+import { Card } from "@/components/ui/card";
 import { 
   Target, 
   Scale, 
@@ -106,10 +106,38 @@ const HealthGoals = ({ formData, updateFormData }: HealthGoalsProps) => {
     },
   ];
 
-  const handleGoalChange = (goal: string) => {
-    const newGoals = formData.healthGoals.includes(goal)
-      ? formData.healthGoals.filter((g) => g !== goal)
-      : [...formData.healthGoals, goal];
+  const aspirationalLevels = [
+    {
+      value: "stay-same",
+      label: "Stay at the Same Level",
+      description: "I'm comfortable where I am",
+    },
+    {
+      value: "gain-confidence",
+      label: "Gain Confidence",
+      description: "I'd like to move from basic to comfortable cooking",
+    },
+    {
+      value: "explore",
+      label: "Explore & Experiment",
+      description: "I want to try new dishes and techniques",
+    },
+    {
+      value: "master",
+      label: "Master Advanced Techniques",
+      description: "I'd love to tackle gourmet-level cooking",
+    },
+    {
+      value: "professional",
+      label: "Professional Aspirations",
+      description: "I'm thinking about culinary school or professional-level skills",
+    },
+  ];
+
+  const handleGoalToggle = (goalId: string) => {
+    const newGoals = formData.healthGoals.includes(goalId)
+      ? formData.healthGoals.filter((g) => g !== goalId)
+      : [...formData.healthGoals, goalId];
     updateFormData({ healthGoals: newGoals });
   };
 
@@ -117,35 +145,31 @@ const HealthGoals = ({ formData, updateFormData }: HealthGoalsProps) => {
     <div className="space-y-8">
       <div className="space-y-4">
         <h3 className="text-lg font-medium">Health Goals</h3>
-        <div className="grid gap-4">
-          {goals.map((goal) => (
-            <div key={goal.id} className="flex items-center space-x-4 p-4 rounded-lg border hover:bg-gray-50 transition-colors">
-              <goal.icon className="h-6 w-6 text-purple-500" />
-              <div className="flex-1">
-                <Select
-                  value={formData.healthGoals.includes(goal.id) ? goal.id : ""}
-                  onValueChange={() => handleGoalChange(goal.id)}
-                >
-                  <SelectTrigger className="w-full">
-                    <SelectValue>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{goal.label}</span>
-                        <span className="text-sm text-gray-500">{goal.description}</span>
-                      </div>
-                    </SelectValue>
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value={goal.id}>
-                      <div className="flex flex-col">
-                        <span className="font-medium">{goal.label}</span>
-                        <span className="text-sm text-gray-500">{goal.description}</span>
-                      </div>
-                    </SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          ))}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {goals.map((goal) => {
+            const isSelected = formData.healthGoals.includes(goal.id);
+            return (
+              <Card
+                key={goal.id}
+                className={`p-4 cursor-pointer transition-colors ${
+                  isSelected
+                    ? "bg-purple-50 border-purple-200"
+                    : "hover:bg-gray-50"
+                }`}
+                onClick={() => handleGoalToggle(goal.id)}
+              >
+                <div className="flex items-center space-x-4">
+                  <goal.icon className={`h-6 w-6 ${
+                    isSelected ? "text-purple-500" : "text-gray-500"
+                  }`} />
+                  <div>
+                    <h4 className="font-medium">{goal.label}</h4>
+                    <p className="text-sm text-gray-500">{goal.description}</p>
+                  </div>
+                </div>
+              </Card>
+            );
+          })}
         </div>
       </div>
 
@@ -161,7 +185,7 @@ const HealthGoals = ({ formData, updateFormData }: HealthGoalsProps) => {
           <SelectContent>
             {cookingLevels.map((level) => (
               <SelectItem key={level.value} value={level.value}>
-                <div className="flex flex-col">
+                <div className="flex flex-col py-2">
                   <span className="font-medium">{level.label}</span>
                   <span className="text-sm text-gray-500">{level.description}</span>
                 </div>
@@ -173,7 +197,7 @@ const HealthGoals = ({ formData, updateFormData }: HealthGoalsProps) => {
 
       <div className="space-y-4">
         <h3 className="text-lg font-medium">Aspirational Cooking Level</h3>
-        <p className="text-sm text-gray-500 mb-4">Where do you see yourself in a few months or a year?</p>
+        <p className="text-sm text-gray-500">Where do you see yourself in a few months or a year?</p>
         <Select
           value={formData.aspirationalLevel}
           onValueChange={(value) => updateFormData({ aspirationalLevel: value })}
@@ -182,9 +206,9 @@ const HealthGoals = ({ formData, updateFormData }: HealthGoalsProps) => {
             <SelectValue placeholder="Select your goal cooking level" />
           </SelectTrigger>
           <SelectContent>
-            {cookingLevels.map((level) => (
+            {aspirationalLevels.map((level) => (
               <SelectItem key={level.value} value={level.value}>
-                <div className="flex flex-col">
+                <div className="flex flex-col py-2">
                   <span className="font-medium">{level.label}</span>
                   <span className="text-sm text-gray-500">{level.description}</span>
                 </div>
