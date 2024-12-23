@@ -25,6 +25,35 @@ const Profile = () => {
   const [currentStep, setCurrentStep] = useState(0);
   const navigate = useNavigate();
 
+  // Form state
+  const [formData, setFormData] = useState({
+    // Basic Info
+    name: "",
+    age: "",
+    // Dietary Preferences
+    dietaryPreferences: [] as string[],
+    allergies: [] as string[],
+    // Health Goals
+    healthGoals: [] as string[],
+    cookingLevel: "",
+    aspirationalLevel: "",
+    // Household Info
+    householdSize: "",
+    budget: "",
+    // Kitchen Equipment
+    equipment: [] as string[],
+    // Cuisine Preferences
+    cuisinePreferences: [] as string[],
+    flavorProfiles: [] as string[],
+  });
+
+  // Schedule state
+  const [schedule, setSchedule] = useState({});
+
+  const updateFormData = (data: Partial<typeof formData>) => {
+    setFormData((prev) => ({ ...prev, ...data }));
+  };
+
   const handleNext = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
@@ -42,19 +71,19 @@ const Profile = () => {
   const renderStep = () => {
     switch (currentStep) {
       case 0:
-        return <BasicInfo />;
+        return <BasicInfo formData={formData} updateFormData={updateFormData} />;
       case 1:
-        return <DietaryPreferences />;
+        return <DietaryPreferences formData={formData} updateFormData={updateFormData} />;
       case 2:
-        return <HealthGoals />;
+        return <HealthGoals formData={formData} updateFormData={updateFormData} />;
       case 3:
-        return <HouseholdInfo />;
+        return <HouseholdInfo formData={formData} updateFormData={updateFormData} />;
       case 4:
-        return <KitchenEquipment />;
+        return <KitchenEquipment formData={formData} updateFormData={updateFormData} />;
       case 5:
-        return <CuisinePreferences />;
+        return <CuisinePreferences formData={formData} updateFormData={updateFormData} />;
       case 6:
-        return <WeeklySchedule />;
+        return <WeeklySchedule schedule={schedule} setSchedule={setSchedule} />;
       default:
         return null;
     }
