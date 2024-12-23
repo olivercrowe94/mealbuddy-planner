@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import WeeklySchedule from "@/components/profile/WeeklySchedule";
 import { useToast } from "@/components/ui/use-toast";
-import { Check, Copy, Home, User, Calendar } from "lucide-react";
+import { Check, Copy, Home, User, Calendar, UtensilsCrossed } from "lucide-react";
 
 const Schedule = () => {
   const navigate = useNavigate();
@@ -18,7 +18,6 @@ const Schedule = () => {
   };
 
   const handleCopyLastWeek = () => {
-    // This would typically fetch last week's schedule from backend
     toast({
       title: "Schedule Copied",
       description: "Last week's schedule has been copied successfully!",
@@ -31,8 +30,8 @@ const Schedule = () => {
         {/* Left Navigation */}
         <div className="w-64 bg-white shadow-lg p-6 space-y-4">
           <div className="flex items-center gap-2 text-purple-600 font-medium mb-8">
-            <Check className="w-5 h-5" />
-            <span>Profile Complete</span>
+            <Calendar className="w-5 h-5" />
+            <span>Weekly Planning</span>
           </div>
           
           <Button
@@ -50,7 +49,7 @@ const Schedule = () => {
             onClick={() => navigate("/profile")}
           >
             <User className="mr-2 h-4 w-4" />
-            Edit Profile
+            Profile
           </Button>
           
           <Button
@@ -59,6 +58,15 @@ const Schedule = () => {
           >
             <Calendar className="mr-2 h-4 w-4" />
             Weekly Schedule
+          </Button>
+
+          <Button
+            variant="ghost"
+            className="w-full justify-start"
+            onClick={() => navigate("/recipes")}
+          >
+            <UtensilsCrossed className="mr-2 h-4 w-4" />
+            Recipes
           </Button>
         </div>
 

@@ -4,6 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import Index from "@/pages/Index";
 import Profile from "@/pages/Profile";
 import Schedule from "@/pages/Schedule";
+import Recipes from "@/pages/Recipes";
 import "./App.css";
 
 // Create a client
@@ -17,6 +18,7 @@ function App() {
           <Route path="/" element={<Index />} />
           <Route path="/profile" element={<Profile />} />
           <Route path="/schedule" element={<Schedule />} />
+          <Route path="/recipes" element={<Recipes />} />
         </Routes>
         <Toaster />
       </Router>
