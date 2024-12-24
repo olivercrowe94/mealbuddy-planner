@@ -5,6 +5,8 @@ import Index from "@/pages/Index";
 import Profile from "@/pages/Profile";
 import Schedule from "@/pages/Schedule";
 import Recipes from "@/pages/Recipes";
+import RecipeDetail from "@/pages/RecipeDetail";
+import WeeklyFeedback from "@/pages/WeeklyFeedback";
 import "./App.css";
 
 // Create a client
@@ -19,6 +21,8 @@ function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/schedule" element={<Schedule />} />
           <Route path="/recipes" element={<Recipes />} />
+          <Route path="/recipe/:id" element={<RecipeDetail />} />
+          <Route path="/weekly-feedback" element={<WeeklyFeedback />} />
         </Routes>
         <Toaster />
       </Router>
