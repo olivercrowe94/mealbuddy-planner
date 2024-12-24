@@ -7,21 +7,24 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
 import BasketModal from "./BasketModal";
+import { format, addDays, startOfWeek } from "date-fns";
 
 interface ScheduleProps {
   schedule: any;
   setSchedule: (schedule: any) => void;
+  selectedWeek: Date;
 }
 
-const WeeklySchedule = ({ schedule, setSchedule }: ScheduleProps) => {
-  const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+const WeeklySchedule = ({ schedule, setSchedule, selectedWeek }: ScheduleProps) => {
+  const weekDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
   const meals = ["Breakfast", "Lunch", "Dinner"];
   const { toast } = useToast();
   const [showBasket, setShowBasket] = useState(false);
+
+  const weekStart = startOfWeek(selectedWeek, { weekStartsOn: 1 });
 
   const handleTimeChange = (day: string, meal: string, time: string) => {
     setSchedule((prev: any) => ({
@@ -72,9 +75,16 @@ const WeeklySchedule = ({ schedule, setSchedule }: ScheduleProps) => {
             </tr>
           </thead>
           <tbody>
-            {days.map((day) => (
+            {weekDays.map((day, index) => (
               <tr key={day} className="border-t">
-                <td className="px-4 py-4 font-medium">{day}</td>
+                <td className="px-4 py-4">
+                  <div>
+                    <div className="font-medium">{day}</div>
+                    <div className="text-sm text-gray-500">
+                      {format(addDays(weekStart, index), 'MMM d')}
+                    </div>
+                  </div>
+                </td>
                 {meals.map((meal) => (
                   <td key={`${day}-${meal}`} className="px-4 py-4">
                     <div className="space-y-2">
