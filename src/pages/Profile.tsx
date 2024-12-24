@@ -49,6 +49,7 @@ const Profile = () => {
 
   // Schedule state
   const [schedule, setSchedule] = useState({});
+  const [selectedWeek] = useState(new Date());
 
   const updateFormData = (data: Partial<typeof formData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
@@ -83,7 +84,11 @@ const Profile = () => {
       case 5:
         return <CuisinePreferences formData={formData} updateFormData={updateFormData} />;
       case 6:
-        return <WeeklySchedule schedule={schedule} setSchedule={setSchedule} />;
+        return <WeeklySchedule 
+          schedule={schedule} 
+          setSchedule={setSchedule} 
+          selectedWeek={selectedWeek}
+        />;
       default:
         return null;
     }
