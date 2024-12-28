@@ -6,8 +6,11 @@ import WeeklySchedule from "@/components/profile/WeeklySchedule";
 import { useToast } from "@/components/ui/use-toast";
 import { Check, Copy, Home, User, Calendar, UtensilsCrossed, ChevronLeft, ChevronRight } from "lucide-react";
 import { format, startOfWeek, addWeeks, subWeeks } from "date-fns";
+import { useIsMobile } from "@/hooks/use-mobile";
+import MobileSchedule from "./MobileSchedule";
 
 const Schedule = () => {
+  const isMobile = useIsMobile();
   const navigate = useNavigate();
   const { toast } = useToast();
   const [schedule, setSchedule] = useState({});
@@ -33,6 +36,10 @@ const Schedule = () => {
 
   const nextWeek = () => setSelectedWeek(addWeeks(selectedWeek, 1));
   const previousWeek = () => setSelectedWeek(subWeeks(selectedWeek, 1));
+
+  if (isMobile) {
+    return <MobileSchedule />;
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 to-white">
