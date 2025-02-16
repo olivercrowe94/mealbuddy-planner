@@ -1,3 +1,4 @@
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
@@ -8,7 +9,6 @@ import HealthGoals from "@/components/profile/HealthGoals";
 import HouseholdInfo from "@/components/profile/HouseholdInfo";
 import KitchenEquipment from "@/components/profile/KitchenEquipment";
 import CuisinePreferences from "@/components/profile/CuisinePreferences";
-import WeeklySchedule from "@/components/profile/WeeklySchedule";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 const steps = [
@@ -18,7 +18,6 @@ const steps = [
   "Household Info",
   "Kitchen Equipment",
   "Cuisine Preferences",
-  "Weekly Schedule",
 ];
 
 const Profile = () => {
@@ -48,10 +47,6 @@ const Profile = () => {
     flavorProfiles: [] as string[],
   });
 
-  // Schedule state
-  const [schedule, setSchedule] = useState({});
-  const [selectedWeek] = useState(new Date());
-
   const updateFormData = (data: Partial<typeof formData>) => {
     setFormData((prev) => ({ ...prev, ...data }));
   };
@@ -60,7 +55,7 @@ const Profile = () => {
     if (currentStep < steps.length - 1) {
       setCurrentStep((prev) => prev + 1);
     } else {
-      navigate("/schedule");
+      navigate("/dashboard");
     }
   };
 
@@ -84,12 +79,6 @@ const Profile = () => {
         return <KitchenEquipment formData={formData} updateFormData={updateFormData} />;
       case 5:
         return <CuisinePreferences formData={formData} updateFormData={updateFormData} />;
-      case 6:
-        return <WeeklySchedule 
-          schedule={schedule} 
-          setSchedule={setSchedule} 
-          selectedWeek={selectedWeek}
-        />;
       default:
         return null;
     }
@@ -118,7 +107,7 @@ const Profile = () => {
           onClick={handleNext}
           className="flex items-center gap-2"
         >
-          {currentStep === steps.length - 1 ? "Save and Continue" : "Next"}
+          {currentStep === steps.length - 1 ? "Complete Profile" : "Next"}
           <ChevronRight className="w-4 h-4" />
         </Button>
       </div>
