@@ -14,7 +14,7 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
     const checkAuth = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        navigate("/profile");
+        navigate("/dashboard");
       }
     };
     
@@ -22,7 +22,7 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
       if (session) {
-        navigate("/profile");
+        navigate("/dashboard");
       }
     });
 
