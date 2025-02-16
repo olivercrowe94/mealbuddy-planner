@@ -22,7 +22,7 @@ export default function SignUp() {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.signUp({
+      const { error, data } = await supabase.auth.signUp({
         email,
         password,
         options: {
@@ -35,16 +35,21 @@ export default function SignUp() {
 
       if (error) throw error;
 
-      toast({
-        title: "Account created!",
-        description: "Please complete your profile.",
-      });
+      if (data.user) {
+        toast({
+          title: "Account created!",
+          description: "Please complete your profile.",
+        });
+        navigate("/profile");
+      }
     } catch (error: any) {
+      console.error("Sign up error:", error);
       toast({
         title: "Error creating account",
         description: error.message,
         variant: "destructive",
       });
+    } finally {
       setIsLoading(false);
     }
   };

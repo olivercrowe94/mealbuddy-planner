@@ -20,8 +20,8 @@ const AuthLayout = ({ children }: AuthLayoutProps) => {
     
     checkAuth();
 
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((event) => {
-      if (event === "SIGNED_IN") {
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (session) {
         navigate("/profile");
       }
     });

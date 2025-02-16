@@ -20,18 +20,22 @@ export default function SignIn() {
     setIsLoading(true);
 
     try {
-      const { error } = await supabase.auth.signInWithPassword({
+      const { error, data } = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (error) throw error;
 
-      toast({
-        title: "Welcome back!",
-        description: "Successfully signed in.",
-      });
+      if (data.session) {
+        toast({
+          title: "Welcome back!",
+          description: "Successfully signed in.",
+        });
+        navigate("/profile");
+      }
     } catch (error: any) {
+      console.error("Sign in error:", error);
       toast({
         title: "Error signing in",
         description: error.message,
