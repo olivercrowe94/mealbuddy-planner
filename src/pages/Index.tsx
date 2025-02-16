@@ -1,9 +1,28 @@
+
 import { Button } from "@/components/ui/button";
 import { useNavigate } from "react-router-dom";
 import { User, Calendar, BookOpen, ShoppingBasket } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useEffect, useState } from "react";
 
 const Index = () => {
   const navigate = useNavigate();
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const { data: { session } } = await supabase.auth.getSession();
+      setIsAuthenticated(!!session);
+    };
+    
+    checkAuth();
+
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session);
+    });
+
+    return () => subscription.unsubscribe();
+  }, []);
 
   const features = [
     {
@@ -40,12 +59,32 @@ const Index = () => {
             Customize your meal plans, view detailed recipes, and generate precise
             shopping lists tailored to your preferences.
           </p>
-          <Button
-            onClick={() => navigate("/profile")}
-            className="bg-[#9b87f5] hover:bg-[#8b77e5] text-white px-8 py-6 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all animate-scale-in"
-          >
-            Get Started
-          </Button>
+          <div className="space-x-4">
+            {isAuthenticated ? (
+              <Button
+                onClick={() => navigate("/profile")}
+                className="bg-[#9b87f5] hover:bg-[#8b77e5] text-white px-8 py-6 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all animate-scale-in"
+              >
+                Go to Profile
+              </Button>
+            ) : (
+              <>
+                <Button
+                  onClick={() => navigate("/auth/signup")}
+                  className="bg-[#9b87f5] hover:bg-[#8b77e5] text-white px-8 py-6 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all animate-scale-in"
+                >
+                  Get Started
+                </Button>
+                <Button
+                  onClick={() => navigate("/auth/signin")}
+                  variant="outline"
+                  className="px-8 py-6 text-lg rounded-lg shadow-lg hover:shadow-xl transition-all animate-scale-in"
+                >
+                  Sign In
+                </Button>
+              </>
+            )}
+          </div>
         </div>
 
         {/* Features Grid */}
