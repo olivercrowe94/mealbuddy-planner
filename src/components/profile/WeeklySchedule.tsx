@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import {
   Select,
@@ -71,7 +70,6 @@ const WeeklySchedule = ({ schedule, setSchedule, selectedWeek }: ScheduleProps) 
       },
     }));
 
-    // Reset batch cook days when changing status
     if (status !== "batch") {
       setBatchCookDays((prev) => {
         const newState = { ...prev };
@@ -87,9 +85,8 @@ const WeeklySchedule = ({ schedule, setSchedule, selectedWeek }: ScheduleProps) 
       [`${day}-${meal}`]: selectedDays,
     }));
 
-    // Update schedule for selected days
     const updates = selectedDays.reduce((acc: any, batchDay) => {
-      if (batchDay !== day) { // Don't update the source day
+      if (batchDay !== day) {
         acc[batchDay] = {
           ...(acc[batchDay] || {}),
           [meal]: {
@@ -121,18 +118,31 @@ const WeeklySchedule = ({ schedule, setSchedule, selectedWeek }: ScheduleProps) 
     setShowBasket(true);
   };
 
+  const getBatchStatusForDay = (day: string, meal: string) => {
+    const isBatchTarget = schedule[day]?.[meal]?.status === "batch" && 
+                         schedule[day]?.[meal]?.batchCookedFrom !== day;
+
+    const isBatchSource = schedule[day]?.[meal]?.status === "batch" && 
+                         schedule[day]?.[meal]?.batchCookedFrom === day;
+
+    return {
+      isBatchTarget,
+      isBatchSource,
+      batchCookedFrom: schedule[day]?.[meal]?.batchCookedFrom
+    };
+  };
+
   const getDaySchedule = (day: string) => {
     return meals.map((meal) => {
       const mealData = schedule[day]?.[meal];
-      const isBatchCooked = mealData?.status === "batch";
-      const batchCookedFrom = mealData?.batchCookedFrom;
+      const { isBatchTarget, batchCookedFrom } = getBatchStatusForDay(day, meal);
       const selectedBatchDays = batchCookDays[`${day}-${meal}`] || [];
 
       return (
         <div key={`${day}-${meal}`} className="mb-6">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-medium text-gray-600">{meal}</span>
-            {isBatchCooked && batchCookedFrom !== day && (
+            {isBatchTarget && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
@@ -220,46 +230,70 @@ const WeeklySchedule = ({ schedule, setSchedule, selectedWeek }: ScheduleProps) 
   return (
     <div className="space-y-6">
       <div className="flex space-x-4 overflow-x-auto pb-4">
-        {weekDays.map((day, index) => (
-          <Card
-            key={day}
-            className={`p-4 cursor-pointer min-w-[200px] transition-all ${
-              selectedDay === day
-                ? "border-purple-400 bg-purple-50"
-                : "hover:border-purple-200"
-            }`}
-            onClick={() => setSelectedDay(day)}
-          >
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-medium">{day}</span>
-              <span className="text-sm text-gray-500">
-                {format(addDays(weekStart, index), 'MMM d')}
-              </span>
-            </div>
-            <div className="space-y-1">
-              {meals.map((meal) => {
-                const status = schedule[day]?.[meal]?.status;
-                return (
-                  <div
-                    key={meal}
-                    className="text-xs flex items-center space-x-1 text-gray-500"
-                  >
-                    <div
-                      className={`w-2 h-2 rounded-full ${
-                        status === "cook"
-                          ? "bg-green-400"
-                          : status === "batch"
-                          ? "bg-purple-400"
-                          : "bg-gray-300"
-                      }`}
-                    />
-                    <span>{meal}</span>
-                  </div>
-                );
-              })}
-            </div>
-          </Card>
-        ))}
+        {weekDays.map((day, index) => {
+          const dayMeals = meals.map((meal) => {
+            const { isBatchTarget, isBatchSource, batchCookedFrom } = getBatchStatusForDay(day, meal);
+            return {
+              meal,
+              status: schedule[day]?.[meal]?.status,
+              isBatchTarget,
+              isBatchSource,
+              batchCookedFrom
+            };
+          });
+
+          return (
+            <Card
+              key={day}
+              className={`p-4 cursor-pointer min-w-[200px] transition-all ${
+                selectedDay === day
+                  ? "border-purple-400 bg-purple-50"
+                  : "hover:border-purple-200"
+              }`}
+              onClick={() => setSelectedDay(day)}
+            >
+              <div className="flex items-center justify-between mb-2">
+                <span className="font-medium">{day}</span>
+                <span className="text-sm text-gray-500">
+                  {format(addDays(weekStart, index), 'MMM d')}
+                </span>
+              </div>
+              <div className="space-y-1">
+                {dayMeals.map(({ meal, status, isBatchTarget, isBatchSource, batchCookedFrom }) => (
+                  <TooltipProvider key={meal}>
+                    <Tooltip>
+                      <TooltipTrigger>
+                        <div className="text-xs flex items-center space-x-1 text-gray-500">
+                          <div
+                            className={`w-2 h-2 rounded-full ${
+                              status === "cook"
+                                ? "bg-green-400"
+                                : isBatchSource
+                                ? "bg-purple-600"
+                                : isBatchTarget
+                                ? "bg-purple-400"
+                                : "bg-gray-300"
+                            }`}
+                          />
+                          <span>{meal}</span>
+                          {(isBatchTarget || isBatchSource) && (
+                            <Copy className="w-3 h-3 text-purple-400" />
+                          )}
+                        </div>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        {status === "cook" && "Cooking Fresh"}
+                        {isBatchSource && "Batch Cooking Source"}
+                        {isBatchTarget && `Batch Cooked from ${batchCookedFrom}`}
+                        {status === "skip" && "Skipped"}
+                      </TooltipContent>
+                    </Tooltip>
+                  </TooltipProvider>
+                ))}
+              </div>
+            </Card>
+          );
+        })}
       </div>
 
       <Card className="p-6 bg-white">
