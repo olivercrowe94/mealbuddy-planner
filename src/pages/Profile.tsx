@@ -30,13 +30,14 @@ const Profile = () => {
     // Basic Info
     name: "",
     age: "",
+    cookingLevel: "",
+    aspirationalLevel: "",
     // Dietary Preferences
     dietaryPreferences: [] as string[],
     allergies: [] as string[],
     // Health Goals
     healthGoals: [] as string[],
-    cookingLevel: "",
-    aspirationalLevel: "",
+    exerciseDays: 3,
     // Household Info
     householdSize: "",
     budget: "",

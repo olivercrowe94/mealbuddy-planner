@@ -1,11 +1,6 @@
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+
 import { Card } from "@/components/ui/card";
+import { Slider } from "@/components/ui/slider";
 import { 
   Target, 
   Scale, 
@@ -15,11 +10,11 @@ import {
   Clock, 
   Coffee 
 } from "lucide-react";
+import { Label } from "@/components/ui/label";
 
 interface FormData {
   healthGoals: string[];
-  cookingLevel: string;
-  aspirationalLevel: string;
+  exerciseDays: number;
 }
 
 interface HealthGoalsProps {
@@ -73,67 +68,6 @@ const HealthGoals = ({ formData, updateFormData }: HealthGoalsProps) => {
     },
   ];
 
-  const cookingLevels = [
-    {
-      value: "newcomer",
-      label: "Complete Newcomer",
-      description: "I've barely boiled water; I need the easiest recipes",
-    },
-    {
-      value: "basic",
-      label: "Basic Cook",
-      description: "I can follow simple recipes and do basic prep",
-    },
-    {
-      value: "comfortable",
-      label: "Comfortable Cook",
-      description: "I can handle most standard recipes without stress",
-    },
-    {
-      value: "enthusiast",
-      label: "Enthusiastic Hobbyist",
-      description: "I enjoy cooking new dishes and experimenting",
-    },
-    {
-      value: "seasoned",
-      label: "Seasoned Home Chef",
-      description: "I'm experienced with advanced techniques",
-    },
-    {
-      value: "aspiring-pro",
-      label: "Aspiring Pro",
-      description: "I love challenging recipes and want to refine my skills",
-    },
-  ];
-
-  const aspirationalLevels = [
-    {
-      value: "stay-same",
-      label: "Stay at the Same Level",
-      description: "I'm comfortable where I am",
-    },
-    {
-      value: "gain-confidence",
-      label: "Gain Confidence",
-      description: "I'd like to move from basic to comfortable cooking",
-    },
-    {
-      value: "explore",
-      label: "Explore & Experiment",
-      description: "I want to try new dishes and techniques",
-    },
-    {
-      value: "master",
-      label: "Master Advanced Techniques",
-      description: "I'd love to tackle gourmet-level cooking",
-    },
-    {
-      value: "professional",
-      label: "Professional Aspirations",
-      description: "I'm thinking about culinary school or professional-level skills",
-    },
-  ];
-
   const handleGoalToggle = (goalId: string) => {
     const newGoals = formData.healthGoals.includes(goalId)
       ? formData.healthGoals.filter((g) => g !== goalId)
@@ -174,48 +108,18 @@ const HealthGoals = ({ formData, updateFormData }: HealthGoalsProps) => {
       </div>
 
       <div className="space-y-4">
-        <h3 className="text-lg font-medium">Cooking Experience</h3>
-        <Select
-          value={formData.cookingLevel}
-          onValueChange={(value) => updateFormData({ cookingLevel: value })}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select your cooking level" />
-          </SelectTrigger>
-          <SelectContent>
-            {cookingLevels.map((level) => (
-              <SelectItem key={level.value} value={level.value}>
-                <div className="flex flex-col py-2">
-                  <span className="font-medium">{level.label}</span>
-                  <span className="text-sm text-gray-500">{level.description}</span>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </div>
-
-      <div className="space-y-4">
-        <h3 className="text-lg font-medium">Aspirational Cooking Level</h3>
-        <p className="text-sm text-gray-500">Where do you see yourself in a few months or a year?</p>
-        <Select
-          value={formData.aspirationalLevel}
-          onValueChange={(value) => updateFormData({ aspirationalLevel: value })}
-        >
-          <SelectTrigger className="w-full">
-            <SelectValue placeholder="Select your goal cooking level" />
-          </SelectTrigger>
-          <SelectContent>
-            {aspirationalLevels.map((level) => (
-              <SelectItem key={level.value} value={level.value}>
-                <div className="flex flex-col py-2">
-                  <span className="font-medium">{level.label}</span>
-                  <span className="text-sm text-gray-500">{level.description}</span>
-                </div>
-              </SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
+        <div className="flex justify-between items-center">
+          <Label>Exercise Frequency</Label>
+          <span className="text-sm font-medium">{formData.exerciseDays} days/week</span>
+        </div>
+        <Slider
+          value={[formData.exerciseDays]}
+          onValueChange={([value]) => updateFormData({ exerciseDays: value })}
+          max={7}
+          min={0}
+          step={1}
+          className="w-full"
+        />
       </div>
     </div>
   );
