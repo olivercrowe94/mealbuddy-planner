@@ -26,6 +26,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Label } from "@/components/ui/label";
 
 interface ScheduleProps {
   schedule: any;
@@ -39,6 +41,7 @@ const WeeklySchedule = ({ schedule, setSchedule, selectedWeek }: ScheduleProps) 
   const { toast } = useToast();
   const [showBasket, setShowBasket] = useState(false);
   const [selectedDay, setSelectedDay] = useState(weekDays[0]);
+  const [batchCookDays, setBatchCookDays] = useState<{ [key: string]: string[] }>({});
 
   const weekStart = startOfWeek(selectedWeek, { weekStartsOn: 1 });
 
@@ -63,22 +66,39 @@ const WeeklySchedule = ({ schedule, setSchedule, selectedWeek }: ScheduleProps) 
         [meal]: {
           ...prev[day]?.[meal],
           status,
-          batchCookedFrom: status === "batch" ? selectedDay : undefined,
+          batchCookedFrom: status === "batch" ? day : undefined,
         },
       },
     }));
+
+    // Reset batch cook days when changing status
+    if (status !== "batch") {
+      setBatchCookDays((prev) => {
+        const newState = { ...prev };
+        delete newState[`${day}-${meal}`];
+        return newState;
+      });
+    }
   };
 
-  const handleBatchCook = (fromDay: string, meal: string, toDays: string[]) => {
-    const updates = toDays.reduce((acc: any, day) => {
-      acc[day] = {
-        ...(acc[day] || {}),
-        [meal]: {
-          ...(schedule[fromDay]?.[meal] || {}),
-          status: "batch",
-          batchCookedFrom: fromDay,
-        },
-      };
+  const handleBatchDaySelection = (day: string, meal: string, selectedDays: string[]) => {
+    setBatchCookDays((prev) => ({
+      ...prev,
+      [`${day}-${meal}`]: selectedDays,
+    }));
+
+    // Update schedule for selected days
+    const updates = selectedDays.reduce((acc: any, batchDay) => {
+      if (batchDay !== day) { // Don't update the source day
+        acc[batchDay] = {
+          ...(acc[batchDay] || {}),
+          [meal]: {
+            ...(schedule[day]?.[meal] || {}),
+            status: "batch",
+            batchCookedFrom: day,
+          },
+        };
+      }
       return acc;
     }, {});
 
@@ -88,8 +108,8 @@ const WeeklySchedule = ({ schedule, setSchedule, selectedWeek }: ScheduleProps) 
     }));
 
     toast({
-      title: "Batch Cooking Added",
-      description: `Meal will be batch cooked on ${fromDay}`,
+      title: "Batch Cooking Updated",
+      description: `Meal will be batch cooked on ${day} for ${selectedDays.length - 1} additional days`,
     });
   };
 
@@ -106,12 +126,13 @@ const WeeklySchedule = ({ schedule, setSchedule, selectedWeek }: ScheduleProps) 
       const mealData = schedule[day]?.[meal];
       const isBatchCooked = mealData?.status === "batch";
       const batchCookedFrom = mealData?.batchCookedFrom;
+      const selectedBatchDays = batchCookDays[`${day}-${meal}`] || [];
 
       return (
-        <div key={`${day}-${meal}`} className="mb-4">
+        <div key={`${day}-${meal}`} className="mb-6">
           <div className="flex justify-between items-center mb-2">
             <span className="text-sm font-medium text-gray-600">{meal}</span>
-            {isBatchCooked && (
+            {isBatchCooked && batchCookedFrom !== day && (
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger>
@@ -128,7 +149,7 @@ const WeeklySchedule = ({ schedule, setSchedule, selectedWeek }: ScheduleProps) 
             )}
           </div>
           
-          <div className="space-y-3">
+          <div className="space-y-4">
             <Select
               value={mealData?.status || "skip"}
               onValueChange={(value) => handleStatusChange(day, meal, value)}
@@ -158,20 +179,36 @@ const WeeklySchedule = ({ schedule, setSchedule, selectedWeek }: ScheduleProps) 
                     <span className="text-sm text-gray-500">min</span>
                   </div>
                 </div>
+              </div>
+            )}
 
-                {mealData?.status === "batch" && day === selectedDay && (
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => handleBatchCook(
-                      day,
-                      meal,
-                      weekDays.slice(weekDays.indexOf(day) + 1)
-                    )}
-                  >
-                    Apply to following days
-                  </Button>
-                )}
+            {mealData?.status === "batch" && batchCookedFrom === day && (
+              <div className="mt-4 space-y-3">
+                <Label className="text-sm text-gray-600">Select days to batch cook for:</Label>
+                <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
+                  {weekDays.map((batchDay) => (
+                    <div
+                      key={batchDay}
+                      className="flex items-center space-x-2"
+                      onClick={() => {
+                        const newSelection = selectedBatchDays.includes(batchDay)
+                          ? selectedBatchDays.filter(d => d !== batchDay)
+                          : [...selectedBatchDays, batchDay];
+                        handleBatchDaySelection(day, meal, newSelection);
+                      }}
+                    >
+                      <input
+                        type="checkbox"
+                        className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                        checked={selectedBatchDays.includes(batchDay)}
+                        readOnly
+                      />
+                      <Label className="text-sm cursor-pointer">
+                        {batchDay === day ? `${batchDay} (Source)` : batchDay}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
           </div>
